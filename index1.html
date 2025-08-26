@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Instapromo Exchange</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* === (existing CSS from your file) === */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #4a00e0; --secondary: #8e2de2; --accent: #ff6b6b; --light: #f8f9fa; --dark: #212529; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --info: #17a2b8; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: var(--dark); line-height: 1.6; min-height: 100vh; padding-bottom: 70px; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 15px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 700; display: flex; align-items: center; }
+        .logo i { margin-right: 10px; color: var(--accent); }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 25px; }
+        nav ul li a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; padding: 5px 10px; border-radius: 4px; }
+        nav ul li a:hover { color: var(--accent); }
+        .floating-menu-btn { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer; transition: transform 0.3s; }
+        .floating-menu-btn:hover { transform: scale(1.1); }
+        .floating-menu { position: fixed; bottom: 90px; right: 20px; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); padding: 15px; z-index: 1000; display: none; }
+        .floating-menu.active { display: block; }
+        .floating-menu a { display: block; padding: 10px 15px; color: var(--dark); text-decoration: none; border-radius: 5px; margin: 5px 0; transition: background 0.3s; }
+        .floating-menu a:hover { background: #f1f1f1; }
+        .page-section { display: none; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin: 30px auto; }
+        .page-section.active { display: block; }
+        .section-title { text-align: center; margin-bottom: 30px; color: var(--primary); position: relative; padding-bottom: 15px; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: linear-gradient(to right, var(--primary), var(--secondary)); border-radius: 2px; }
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(rgba(78,0,224,0.8), rgba(142,45,226,0.8)), url('https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; color: white; border-radius: 10px; margin: 20px 0; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1; }
+        .hero h1, .hero p, .hero .btn { position: relative; z-index: 2; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 30px; }
+        .btn { display: inline-block; padding: 12px 30px; background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; text-decoration: none; transition: transform 0.3s, box-shadow 0.3s; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn-secondary { background: var(--secondary); }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0; }
+        .feature-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
+        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; transition: border 0.3s; }
+        .form-control:focus { border-color: var(--primary); outline: none; }
+        .profile-header { display: flex; align-items: center; margin-bottom: 30px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(to right, var(--primary), var(--secondary)); display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; margin-right: 20px; }
+        .profile-info h2 { margin-bottom: 5px; }
+        .balance-card { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
+        .balance-amount { font-size: 2.5rem; font-weight: 700; margin: 10px 0; }
+        .withdrawal-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0; }
+        .withdrawal-option { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .history-section { margin-top: 40px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .history-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; }
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin: 30px 0; }
+        .media-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; }
+        .media-card:hover { transform: translateY(-5px); }
+        .media-card img { width: 100%; height: 200px; object-fit: cover; }
+        .media-content { padding: 15px; }
+        .download-btn { display: block; width: 100%; padding: 10px; background: var(--primary); color: white; text-align: center; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        .download-btn:hover { background: var(--secondary); }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0; }
+        .step-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; position: relative; transition: transform 0.3s; }
+        .step-card:hover { transform: translateY(-5px); }
+        .step-number { position: absolute; top: -15px; left: -15px; width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; }
+        .about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 40px 0; }
+        .about-text { padding: 20px; }
+        .about-image { border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .about-image img { width: 100%; height: 100%; object-fit: cover; }
+        .contact-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 40px 0; }
+        .contact-info { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .contact-detail { display: flex; align-items: center; margin-bottom: 20px; }
+        .contact-detail i { font-size: 1.5rem; color: var(--primary); margin-right: 15px; }
+        .brands-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; margin: 40px 0; }
+        .brand-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; padding: 20px; transition: transform 0.3s; }
+        .brand-card:hover { transform: translateY(-5px); }
+        .brand-logo { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; background: linear-gradient(to right, var(--primary), var(--secondary)); }
+        .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .brand-name { font-weight: 600; margin-bottom: 5px; }
+        .brand-category { color: #666; font-size: 0.9rem; }
+        .admin-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0; }
+        .admin-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; }
+        .admin-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+        .admin-card h3 { margin-bottom: 10px; }
+        .admin-card .count { font-size: 2rem; font-weight: bold; color: var(--secondary); }
+        .admin-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-table th, .admin-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .admin-table th { background: var(--primary); color: white; }
+        .admin-table tr:hover { background: #f9f9f9; }
+        .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+        .btn-edit { background: var(--warning); color: white; }
+        footer { text-align: center; padding: 20px; background: var(--dark); color: white; margin-top: 40p; }
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; text-align: center; }
+            nav ul { margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+            nav ul li { margin: 5px 10px; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .about-content, .contact-container { grid-template-columns: 1fr; }
+            .brands-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .admin-dashboard { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <span>Instapromo Exchange</span>
+            </div>
+            <nav>
+                
+            </nav>
+        </div>
+    </header>
+
+    <!-- Floating Menu Button -->
+    <div class="floating-menu-btn" onclick="toggleFloatingMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="floating-menu" id="floatingMenu">
+        <a href="#" onclick="showPage('home')"><i class="fas fa-home"></i> Home</a>
+        <a href="#" onclick="showPage('signup')" id="signupMenu"><i class="fas fa-user-plus"></i> Sign Up</a>
+        <a href="#" onclick="showPage('login')" id="loginMenu"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="#" onclick="showPage('profile')" id="profileMenu" style="display: none;"><i class="fas fa-user"></i> Profile</a>
+        <a href="#" onclick="showPage('earning')"><i class="fas fa-money-bill"></i> Earning</a>
+        <a href="#" onclick="showPage('brand')"><i class="fas fa-bullhorn"></i> Brand Promotion</a>
+        <a href="#" onclick="showPage('brands')"><i class="fas fa-store"></i> Brands</a>
+        <a href="#" onclick="showPage('how-it-works')"><i class="fas fa-cogs"></i> How It Works</a>
+        <a href="#" onclick="showPage('about')"><i class="fas fa-info-circle"></i> About</a>
+        <a href="#" onclick="showPage('contact')"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="#" onclick="showPage('admin')" id="adminMenu" style="display: none;"><i class="fas fa-cog"></i> Admin Panel</a>
+        <a href="#" onclick="logout()" id="logoutMenu" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="container">
+        <!-- Home Page -->
+        <section id="home" class="page-section active">
+            <div class="hero">
+                <h1>Earn Money Promoting Brands on Instagram</h1>
+                <p>Join thousands of influencers who are earning money by promoting brands on their Instagram profiles</p>
+                <a href="#" class="btn" onclick="showPage('signup')">Get Started Now</a>
+            </div>
+
+            <h2 class="section-title">Why Choose Instapromo Exchange?</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Earn Money</h3>
+                    <p>Get paid for every approved story, reel, or video submission</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Quick Withdrawal</h3>
+                    <p>Withdraw your earnings instantly via UPI or Bank Transfer</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure Platform</h3>
+                    <p>Your data and earnings are safe with our secure platform</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">Featured Brands</h2>
+            <div class="brands-grid">
+                <div class="brand-card">
+                    <div class="brand-logo" style="background: #ff6b6b;">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <div class="brand-name">FashionHub</div>
+                    <div class="brand-category">Fashion & Apparel</div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-logo" style="background: #4a00e0;">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-name">TechGadgets</div>
+                    <div class="brand-category">Electronics</div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-logo" style="background: #28a745;">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="brand-name">FoodieDelight</div>
+                    <div class="brand-category">Food & Beverages</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="#" class="btn" onclick="showPage('brands')">View All Brands</a>
+            </div>
+        </section>
+
+        <!-- Signup Page -->
+        <section id="signup" class="page-section">
+            <h2 class="section-title">Create Your Account</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="instagram">Instagram Account Link</label>
+                    <input type="url" id="instagram" class="form-control" placeholder="Paste your Instagram profile link">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Create a strong password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="signup()">Create Account</button>
+                <p style="text-align: center; margin-top: 20px;">
+                    Already have an account? <a href="#" onclick="showPage('login')" style="color: var(--primary);">Login here</a>
+                </p>
+                <p style="color: red;
+                font-size: 14px;
+                margin-top: 10px;
+                text-align: center;
+                font-weight: bold;">
+                ⚠️ We don’t allow password reset. Please keep your password safe.
+                </p>
+            </div>
+        </section>
+
+        <!-- Login Page -->
+        <section id="login" class="page-section">
+            <h2 class="section-title">Login to Your Account</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+                </div>
+                
+              
+                <button class="btn" style="width: 100%;" onclick="login()">Login</button>
+                <p style="text-align: center; margin-top: 20px;">
+                    Don't have an account? <a href="#" onclick="showPage('signup')" style="color: var(--primary;">Sign up here</a>
+                </p>
+                
+                <p style="color: red;
+                font-size: 14px;
+                margin-top: 10px;
+                text-align: center;
+                font-weight: bold;">
+                ⚠️ We don’t allow password reset. Please keep your password safe.
+                </p>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profile" class="page-section">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileUserName">John Doe</h2>
+                    <p id="profileInstagram">@johndoe</p>
+                </div>
+            </div>
+
+            <div class="balance-card">
+                <p>Your Current Balance</p>
+                <div class="balance-amount" id="profileBalance">₹0</div>
+                <p>Available for withdrawal</p>
+            </div>
+
+            <h3 class="section-title">Submit Content</h3>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="contentType">Content Type</label>
+                    <select id="contentType" class="form-control">
+                        <option value="">Select Content Type</option>
+                        <option value="story">Story</option>
+                        <option value="reels">Reels</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contentLink">Content Link</label>
+                    <input type="url" id="contentLink" class="form-control" placeholder="Paste link to your content">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="submitContent()">Submit Content</button>
+            </div>
+
+            <div class="withdrawal-options">
+                <div class="withdrawal-option">
+                    <h3>Withdraw via UPI</h3>
+                    <div class="form-group">
+                        <label for="upiAmount">Amount</label>
+                        <input type="number" id="upiAmount" class="form-control" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="upiId">UPI ID</label>
+                        <input type="text" id="upiId" class="form-control" placeholder="Enter your UPI ID">
+                    </div>
+                    <button class="btn" style="width: 100%;" onclick="withdrawUpi()">Request Withdrawal</button>
+                </div>
+
+                <div class="withdrawal-option">
+                    <h3>Withdraw via Bank Transfer</h3>
+                    <div class="form-group">
+                        <label for="bankAmount">Amount</label>
+                        <input type="number" id="bankAmount" class="form-control" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountName">Bank Holder Name</label>
+                        <input type="text" id="accountName" class="form-control" placeholder="Enter account holder name">
+                    </div>
+                    <div class="form-group">
+                        <label for="bankName">Bank Name</label>
+                        <input type="text" id="bankName" class="form-control" placeholder="Enter bank name">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountNumber">Account Number</label>
+                        <input type="text" id="accountNumber" class="form-control" placeholder="Enter account number">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmAccountNumber">Re-enter Account Number</label>
+                        <input type="text" id="confirmAccountNumber" class="form-control" placeholder="Re-enter account number">
+                    </div>
+                    <div class="form-group">
+                        <label for="ifscCode">IFSC Code</label>
+                        <input type="text" id="ifscCode" class="form-control" placeholder="Enter IFSC code">
+                    </div>
+                    <button class="btn" style="width: 100%;" onclick="withdrawBank()">Request Withdrawal</button>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h3 class="section-title">Withdrawal History</h3>
+                <div id="withdrawalHistory">
+                    <!-- Populated from Firestore -->
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h3 class="section-title">Submission History</h3>
+                <div id="submissionHistory">
+                    <!-- Populated from Firestore -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Earning Page -->
+        <section id="earning" class="page-section">
+            <h2 class="section-title">Available Content for Promotion</h2>
+            <div class="media-grid">
+                <!-- sample cards -->
+                <div class="media-card">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Promotion Content">
+                    <div class="media-content">
+                        <h4>Fashion Brand Promotion</h4>
+                        <p>Post this story and tag the brand to earn ₹10</p>
+                        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+                        <input type="text" id="companyUrl1" value="https://tayyarhai.com" readonly
+                        style="flex:1;padding:6px;border:1px solid #ccc;border-radius:6px;text-align:center;">
+                        <button onclick="(function(){navigator.clipboard.writeText(document.getElementById('companyUrl1').value);alert('✅ URL Copied: '+document.getElementById('companyUrl1').value);})()" 
+                        style="padding:6px 12px;border:none;border-radius:6px;background:#007bff;color:#fff;cursor:pointer;">
+                        Copy
+                        </button>
+                        </div>
+                        <button class="download-btn">Download & Promote</button>
+                    </div>
+                    <div style="max-width:400px;margin:20px auto;padding:1px;background:#fff;border-radius:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1);text-align:center;">
+                    
+                    
+                    <!-- Reels Style Video -->
+                    <div style="position:relative;width:100%;padding-top:177.78%;overflow:hidden;border-radius:12px;background:#000;">
+                    <video controls playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
+                    
+                    <!-- Apne file se video add karo -->
+                    <source src="Video/Video1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                    </video>
+                    </div>
+                    <!-- Company Name -->
+                    <div class="media-content">
+                    <h4>Fashion Brand Promotion</h4>
+                    <p>Post this story and tag the brand to earn ₹10</p>
+                    <div style="margin-top:12px;display:flex;gap:8px; justify-content:center;">
+                    </div>
+                    <!-- URL + Copy Button -->
+                    <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+                    <input type="text" id="companyUrl1" value="https://tayyarhai.com" readonly
+                    style="flex:1;padding:6px;border:1px solid #ccc;border-radius:6px;text-align:center;">
+                    <button onclick="(function(){navigator.clipboard.writeText(document.getElementById('companyUrl1').value);alert('✅ URL Copied: '+document.getElementById('companyUrl1').value);})()" 
+                    style="padding:6px 12px;border:none;border-radius:6px;background:#007bff;color:#fff;cursor:pointer;">
+                    Copy
+                    </button>
+                    </div>
+                    
+                    <!-- Download Button -->
+                    <a href="videos/reel1.mp4" download
+                    style="display: block; width: 100%; padding: 10px; background: var(--primary); color: white; text-align: center; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background 0.3s; ">
+                    ⬇️ Download Video
+                    </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brand Promotion Page -->
+        <section id="brand" class="page-section">
+            <h2 class="section-title">Brand Promotion</h2>
+            <div class="form-container">
+                <p style="text-align: center; margin-bottom: 20px;">Fill out the form below to promote your brand through our influencers</p>
+                <div class="form-group">
+                    <label for="brandName">Brand Name</label>
+                    <input type="text" id="brandName" class="form-control" placeholder="Enter your brand name">
+                </div>
+                <div class="form-group">
+                    <label for="brandEmail">Email Address</label>
+                    <input type="email" id="brandEmail" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="brandWebsite">Website (optional)</label>
+                    <input type="url" id="brandWebsite" class="form-control" placeholder="Enter your website">
+                </div>
+                <div class="form-group">
+                    <label for="campaignType">Campaign Type</label>
+                    <select id="campaignType" class="form-control">
+                        <option value="">Select Campaign Type</option>
+                        <option value="story">Instagram Story</option>
+                        <option value="reels">Instagram Reels</option>
+                        <option value="post">Instagram Post</option>
+                        <option value="video">Video Content</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="campaignBudget">Campaign Budget (₹)</label>
+                    <input type="number" id="campaignBudget" class="form-control" placeholder="Enter your budget">
+                </div>
+                <div class="form-group">
+                    <label for="campaignDetails">Campaign Details</label>
+                    <textarea id="campaignDetails" class="form-control" rows="5" placeholder="Describe your campaign requirements"></textarea>
+                </div>
+                <button class="btn" style="width: 100%;" onclick="submitBrandRequest()">Submit Promotion Request</button>
+            </div>
+        </section>
+
+        <!-- Brands Page -->
+        <section id="brands" class="page-section">
+            <h2 class="section-title">Our Partner Brands</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Discover the amazing brands you can collaborate with and promote on your Instagram profile</p>
+
+            <div class="brands-grid" id="brandsGrid">
+                <!-- can be dynamic later -->
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 class="section-title">Want to become a partner brand?</h3>
+                <p>Reach out to us to discuss collaboration opportunities</p>
+                <a href="#" class="btn" onclick="showPage('contact')">Contact Us</a>
+            </div>
+        </section>
+
+        <!-- How It Works Page -->
+        <section id="how-it-works" class="page-section">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <i class="fas fa-user-plus fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Create an Account</h3>
+                    <p>Sign up and complete your profile with your Instagram details</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <i class="fas fa-download fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Download Content</h3>
+                    <p>Browse available promotional content and download what you like</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <i class="fas fa-share-square fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Share on Instagram</h3>
+                    <p>Post the content on your Instagram profile and tag the brand</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <i class="fas fa-link fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Submit Link</h3>
+                    <p>Submit the link to your Instagram post through our platform</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <i class="fas fa-check-circle fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Get Approved</h3>
+                    <p>Wait for the brand to approve your submission</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <i class="fas fa-money-bill-wave fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                    <h3>Get Paid</h3>
+                    <p>Receive payment in your account once approved</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about" class="page-section">
+            <h2 class="section-title">About Instapromo Exchange</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Connecting Brands with Influencers</h3>
+                    <p>Instapromo Exchange is a platform that connects brands with Instagram influencers for promotional campaigns. We make it easy for brands to reach their target audience and for influencers to monetize their content.</p>
+                    <p>Founded in 2020, we've helped thousands of brands promote their products and services through authentic influencer marketing.</p>
+                    <p>Our mission is to create a seamless experience for both brands and influencers, ensuring fair compensation for content creators and effective marketing for businesses.</p>
+                    <div>
+                    <h3>Make Your Brand Go Superhit</h3>
+                    <p>We don’t just connect you with influencers – we also create the right content for your brand. From eye-catching story images to engaging reels and ad videos, our team designs everything in-house. This ensures your brand gets high-quality, ready-to-use promotional content that influencers can share instantly</p>
+                    </div>
+                    <h3 style="margin-top: 20px;">Our Values</h3>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Transparency in all transactions</li>
+                        <li>Fair compensation for influencers</li>
+                        <li>Quality content for brands</li>
+                        <li>User-friendly platform experience</li>
+                    </ul>
+                </div>
+                
+                
+            </div>
+            <div>
+              <section style="text-align: center; padding: 50px 20px; background: #f9f9f9;">
+              <div style="display: inline-block; background: white; padding: 20px 30px; border-radius: 20px; 
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 300px;">
+              
+              <!-- CEO Image -->
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CEO Image"
+              style="width: 150px; height: 150px; border-radius: 70%; object-fit: cover; 
+              margin-bottom: 15px; border: 4px solid #ff6600;">
+              
+              <!-- CEO Name -->
+              <h3 style="font-size: 22px; margin: 10px 0 5px; font-weight: bold; color: #222;">
+              Rudr Chauhan
+              </h3>
+              
+              <!-- CEO Role -->
+              <p style="font-size: 16px; color: #777; margin: 0;">
+              Founder & CEO
+              </p>
+              </div>
+              </section>
+            </div>
+        </section>
+
+        <!-- Contact Page -->
+        <section id="contact" class="page-section">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <p>Have questions or need support? Reach out to our team.</p>
+                    <div class="contact-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Address</h4>
+                            <p>123 Business Avenue, Mumbai, India 400001</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+91 98765 43210</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@instapromoexchange.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Working Hours</h4>
+                            <p>Monday-Friday: 9AM to 6PM</p>
+                            <p>Saturday: 10AM to 4PM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-container">
+                    <h3 style="text-align: center; margin-bottom: 20px;">Send us a Message</h3>
+                    <div class="form-group">
+                        <label for="contactName">Your Name</label>
+                        <input type="text" id="contactName" class="form-control" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email Address</label>
+                        <input type="email" id="contactEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Subject</label>
+                        <input type="text" id="contactSubject" class="form-control" placeholder="Enter subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" class="form-control" rows="5" placeholder="Type your message here"></textarea>
+                    </div>
+                    <button class="btn" style="width: 100%;" onclick="sendMessage()">Send Message</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="admin" class="page-section">
+            <h2 class="section-title">Admin Dashboard</h2>
+
+            <div class="admin-dashboard">
+                <div class="admin-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Total Users</h3>
+                    <div class="count" id="totalUsers">0</div>
+                </div>
+                <div class="admin-card">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>Brand Requests</h3>
+                    <div class="count" id="brandRequests">0</div>
+                </div>
+                <div class="admin-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Pending Submissions</h3>
+                    <div class="count" id="pendingSubmissions">0</div>
+                </div>
+                <div class="admin-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Withdrawal Requests</h3>
+                    <div class="count" id="withdrawalRequests">0</div>
+                </div>
+            </div>
+
+            <h3 class="section-title">User Management</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Instagram</th>
+                        <th>Balance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+
+            <h3 class="section-title">Content Submissions</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Content Type</th>
+                        <th>Link</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="submissionTable"></tbody>
+            </table>
+
+            <h3 class="section-title">Withdrawal Requests</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawalTable"></tbody>
+            </table>
+
+            <h3 class="section-title">Brand Promotion Requests</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Email</th>
+                        <th>Budget</th>
+                        <th>Campaign Type</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="brandRequestTable"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Instapromo Exchange. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- === Firebase + App Logic (module) === -->
+    <script type="module">
+      // Modular Firebase v9 imports (browser)
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+      import {
+        getFirestore, collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, query, where, orderBy, serverTimestamp
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+      // === Your provided Firebase config ===
+      const firebaseConfig = {
+        apiKey: "AIzaSyBm4VTr__mag1trF4jPZCgqt7gWwBItD58",
+        authDomain: "exchange-a725e.firebaseapp.com",
+        projectId: "exchange-a725e",
+        storageBucket: "exchange-a725e.firebasestorage.app",
+        messagingSenderId: "47165517524",
+        appId: "1:47165517524:web:7712aae884de7a498a1541"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // State
+      let firebaseUser = null;        // firebase auth user
+      let firebaseUserData = null;    // user's doc data
+
+      // UI helpers (show/hide nav items)
+      function updateUIAfterLogin(isAdmin=false) {
+        document.getElementById('signupNav').style.display = 'none';
+        document.getElementById('loginNav').style.display = 'none';
+        document.getElementById('profileNav').style.display = isAdmin ? 'none' : 'block';
+        document.getElementById('signupMenu').style.display = 'none';
+        document.getElementById('loginMenu').style.display = 'none';
+        document.getElementById('profileMenu').style.display = isAdmin ? 'none' : 'block';
+        document.getElementById('logoutMenu').style.display = 'block';
+        if (isAdmin) {
+          document.getElementById('adminNav').style.display = 'block';
+          document.getElementById('adminMenu').style.display = 'block';
+        } else {
+          document.getElementById('adminNav').style.display = 'none';
+          document.getElementById('adminMenu').style.display = 'none';
+        }
+      }
+      function updateUIAfterLogout() {
+        document.getElementById('signupNav').style.display = 'block';
+        document.getElementById('loginNav').style.display = 'block';
+        document.getElementById('profileNav').style.display = 'none';
+        document.getElementById('adminNav').style.display = 'none';
+        document.getElementById('signupMenu').style.display = 'block';
+        document.getElementById('loginMenu').style.display = 'block';
+        document.getElementById('profileMenu').style.display = 'none';
+        document.getElementById('logoutMenu').style.display = 'none';
+        document.getElementById('adminMenu').style.display = 'none';
+      }
+
+      // Utility: format date
+      function formatDate(iso) {
+        try { return new Date(iso).toLocaleDateString(); } catch(e){ return iso; }
+      }
+
+      // === Auth state listener ===
+      onAuthStateChanged(auth, async (user) => {
+        firebaseUser = user;
+        if (user) {
+          // fetch user doc
+          const docRef = doc(db, "users", user.uid);
+          const snap = await getDoc(docRef);
+          firebaseUserData = snap.exists() ? snap.data() : null;
+
+          const isAdmin = user.email === 'admin@instapromo.com';
+          updateUIAfterLogin(isAdmin);
+
+          if (isAdmin) {
+            // show admin page by default
+            showPage('admin');
+            await loadAdminData();
+          } else {
+            // show profile and populate
+            showPage('profile');
+            populateProfileUI();
+            await loadUserHistory();
+          }
+        } else {
+          firebaseUserData = null;
+          updateUIAfterLogout();
+          showPage('home');
+        }
+      });
+
+      // === Signup ===
+      window.signup = async function() {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const instagram = document.getElementById('instagram').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!name || !email || !instagram || !password || !confirmPassword) { alert('Please fill all fields'); return; }
+        if (password !== confirmPassword) { alert('Passwords do not match'); return; }
+
+        try {
+          const userCred = await createUserWithEmailAndPassword(auth, email, password);
+          const uid = userCred.user.uid;
+
+          // create user doc
+          await setDoc(doc(db, "users", uid), {
+            name, email, instagram, balance: 0, joined: new Date().toISOString()
+          });
+
+          alert('Account created successfully!');
+          // onAuthStateChanged will handle UI and profile load
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // === Login ===
+      window.login = async function() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) { alert('Please fill all fields'); return; }
+
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          alert('Logged in successfully!');
+          // onAuthStateChanged will handle UI
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // Prefill admin credentials (demo)
+      window.prefillAdmin = function() {
+        document.getElementById('loginEmail').value = 'admin@instapromo.com';
+        document.getElementById('loginPassword').value = 'admin123';
+        // Note: make sure admin account exists in Firebase Auth with this password
+      };
+
+      // === Logout ===
+      window.logout = async function() {
+        try {
+          await signOut(auth);
+          alert('Logged out successfully!');
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // Populate profile UI
+      function populateProfileUI() {
+        if (!firebaseUserData) return;
+        document.getElementById('profileUserName').textContent = firebaseUserData.name || '';
+        document.getElementById('profileInstagram').textContent = firebaseUserData.instagram || '';
+        document.getElementById('profileBalance').textContent = `₹${firebaseUserData.balance || 0}`;
+      }
+
+      // === Submit Content (submissions collection) ===
+      window.submitContent = async function() {
+        if (!firebaseUser) { alert('Please login first'); return; }
+        const contentType = document.getElementById('contentType').value;
+        const contentLink = document.getElementById('contentLink').value.trim();
+        if (!contentType || !contentLink) { alert('Please fill all fields'); return; }
+
+        try {
+          const amount = contentType === 'story' ? 25 : contentType === 'reels' ? 800 : 1200;
+          await addDoc(collection(db, "submissions"), {
+            userId: firebaseUser.uid,
+            userName: firebaseUserData?.name || '',
+            contentType, contentLink,
+            date: new Date().toISOString(),
+            status: 'pending',
+            amount
+          });
+          alert('Content submitted successfully! It will be reviewed by our team.');
+          document.getElementById('contentType').value = '';
+          document.getElementById('contentLink').value = '';
+          await loadUserHistory();
+          if (firebaseUser.email === 'admin@instapromo.com') loadAdminData();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // === Withdraw UPI ===
+      window.withdrawUpi = async function() {
+        if (!firebaseUser) { alert('Please login first'); return; }
+        const amount = parseInt(document.getElementById('upiAmount').value);
+        const upiId = document.getElementById('upiId').value.trim();
+        if (!amount || !upiId) { alert('Please fill all fields'); return; }
+
+        if ((firebaseUserData?.balance || 0) < amount) { alert('Insufficient balance'); return; }
+
+        try {
+          await addDoc(collection(db, "withdrawals"), {
+            userId: firebaseUser.uid,
+            userName: firebaseUserData?.name || '',
+            amount, method: 'UPI', upiId,
+            date: new Date().toISOString(),
+            status: 'pending'
+          });
+          alert('Withdrawal request submitted successfully!');
+          document.getElementById('upiAmount').value = '';
+          document.getElementById('upiId').value = '';
+          await loadUserHistory();
+          if (firebaseUser.email === 'admin@instapromo.com') loadAdminData();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // === Withdraw Bank ===
+      window.withdrawBank = async function() {
+        if (!firebaseUser) { alert('Please login first'); return; }
+        const amount = parseInt(document.getElementById('bankAmount').value);
+        const accountName = document.getElementById('accountName').value.trim();
+        const bankName = document.getElementById('bankName').value.trim();
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const confirmAccountNumber = document.getElementById('confirmAccountNumber').value.trim();
+        const ifscCode = document.getElementById('ifscCode').value.trim();
+
+        if (!amount || !accountName || !bankName || !accountNumber || !confirmAccountNumber || !ifscCode) { alert('Please fill all fields'); return; }
+        if (accountNumber !== confirmAccountNumber) { alert('Account numbers do not match'); return; }
+        if ((firebaseUserData?.balance || 0) < amount) { alert('Insufficient balance'); return; }
+
+        try {
+          await addDoc(collection(db, "withdrawals"), {
+            userId: firebaseUser.uid,
+            userName: firebaseUserData?.name || '',
+            amount, method: 'Bank Transfer',
+            accountName, bankName, accountNumber, ifscCode,
+            date: new Date().toISOString(),
+            status: 'pending'
+          });
+          alert('Withdrawal request submitted successfully!');
+          // clear
+          document.getElementById('bankAmount').value = '';
+          document.getElementById('accountName').value = '';
+          document.getElementById('bankName').value = '';
+          document.getElementById('accountNumber').value = '';
+          document.getElementById('confirmAccountNumber').value = '';
+          document.getElementById('ifscCode').value = '';
+          await loadUserHistory();
+          if (firebaseUser.email === 'admin@instapromo.com') loadAdminData();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // === Brand Request ===
+      window.submitBrandRequest = async function() {
+        const brandName = document.getElementById('brandName').value.trim();
+        const brandEmail = document.getElementById('brandEmail').value.trim();
+        const brandWebsite = document.getElementById('brandWebsite').value.trim();
+        const campaignType = document.getElementById('campaignType').value;
+        const campaignBudget = parseInt(document.getElementById('campaignBudget').value);
+        const campaignDetails = document.getElementById('campaignDetails').value.trim();
+
+        if (!brandName || !brandEmail || !campaignType || !campaignBudget || !campaignDetails) { alert('Please fill all required fields'); return; }
+
+        try {
+          await addDoc(collection(db, "brandRequests"), {
+            brandName, brandEmail, brandWebsite, campaignType, campaignBudget, campaignDetails,
+            date: new Date().toISOString(), status: 'pending'
+          });
+          alert('Brand promotion request submitted successfully!');
+          document.getElementById('brandName').value = '';
+          document.getElementById('brandEmail').value = '';
+          document.getElementById('brandWebsite').value = '';
+          document.getElementById('campaignType').value = '';
+          document.getElementById('campaignBudget').value = '';
+          document.getElementById('campaignDetails').value = '';
+          if (firebaseUser && firebaseUser.email === 'admin@instapromo.com') loadAdminData();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // === Load user-specific history (submissions & withdrawals) ===
+      async function loadUserHistory() {
+        if (!firebaseUser) return;
+        // submissions
+        const subQ = query(collection(db, "submissions"), where("userId", "==", firebaseUser.uid), orderBy("date", "desc"));
+        const subSnap = await getDocs(subQ);
+        const submissionHistory = document.getElementById('submissionHistory');
+        submissionHistory.innerHTML = '';
+        subSnap.forEach(docItem => {
+          const d = docItem.data();
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          el.innerHTML = `<div>${d.contentType} - ${d.amount ? '₹' + d.amount : ''}</div><div>${formatDate(d.date)}</div><div style="color:${d.status==='approved'?'var(--success)':d.status==='pending'?'var(--warning)':'var(--danger)'}">${d.status}</div><div><a href="${d.contentLink}" target="_blank">View</a></div>`;
+          submissionHistory.appendChild(el);
+        });
+
+        // withdrawals
+        const witQ = query(collection(db, "withdrawals"), where("userId", "==", firebaseUser.uid), orderBy("date", "desc"));
+        const witSnap = await getDocs(witQ);
+        const withdrawalHistory = document.getElementById('withdrawalHistory');
+        withdrawalHistory.innerHTML = '';
+        witSnap.forEach(docItem => {
+          const d = docItem.data();
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          el.innerHTML = `<div>₹${d.amount}</div><div>${d.method}${d.upiId? ' - '+d.upiId:''}</div><div>${formatDate(d.date)}</div><div style="color:${d.status==='completed'?'var(--success)':d.status==='pending'?'var(--warning)':'var(--danger)'}">${d.status}</div>`;
+          withdrawalHistory.appendChild(el);
+        });
+
+        // refresh local firebaseUserData (balance may have changed)
+        const userSnap = await getDoc(doc(db, "users", firebaseUser.uid));
+        if (userSnap.exists()) {
+          firebaseUserData = userSnap.data();
+          populateProfileUI();
+        }
+      }
+
+      // === Admin functions & loading admin dashboard data ===
+      async function loadAdminData() {
+        // users
+        const usersSnap = await getDocs(collection(db, "users"));
+        const users = [];
+        usersSnap.forEach(d => users.push({ id: d.id, ...d.data() }));
+        document.getElementById('totalUsers').textContent = users.length;
+        const userTable = document.getElementById('userTable');
+        userTable.innerHTML = '';
+        users.forEach(u => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${u.name || ''}</td><td>${u.email || ''}</td><td>${u.instagram || ''}</td><td>₹${u.balance || 0}</td>
+            <td><button class="action-btn btn-edit" onclick="adminEditUser('${u.id}', ${u.balance || 0})">Edit</button></td>`;
+          userTable.appendChild(row);
+        });
+
+        // submissions
+        const subsSnap = await getDocs(query(collection(db, "submissions"), orderBy("date", "desc")));
+        const subs = []; subsSnap.forEach(d => subs.push({ id: d.id, ...d.data() }));
+        document.getElementById('pendingSubmissions').textContent = subs.filter(s=>s.status==='pending').length;
+        const submissionTable = document.getElementById('submissionTable'); submissionTable.innerHTML = '';
+        subs.forEach(s => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${s.userName}</td><td>${s.contentType}</td><td><a href="${s.contentLink}" target="_blank">View Content</a></td><td>${formatDate(s.date)}</td><td>${s.status}</td>
+            <td>${s.status==='pending' ? `<button class="action-btn btn-approve" onclick="approveSubmission('${s.id}', '${s.userId}', ${s.amount})">Approve</button>
+            <button class="action-btn btn-reject" onclick="rejectSubmission('${s.id}')">Reject</button>` : ''}</td>`;
+          submissionTable.appendChild(row);
+        });
+
+        // withdrawals
+        const witSnap = await getDocs(query(collection(db, "withdrawals"), orderBy("date", "desc")));
+        const wits = []; witSnap.forEach(d => wits.push({ id: d.id, ...d.data() }));
+        document.getElementById('withdrawalRequests').textContent = wits.filter(w=>w.status==='pending').length;
+        const withdrawalTable = document.getElementById('withdrawalTable'); withdrawalTable.innerHTML = '';
+        wits.forEach(w => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${w.userName}</td><td>₹${w.amount}</td><td>${w.method}</td><td>${formatDate(w.date)}</td><td>${w.status}</td>
+            <td>${w.status==='pending'? `<button class="action-btn btn-approve" onclick="approveWithdrawal('${w.id}', '${w.userId}', ${w.amount})">Approve</button>
+            <button class="action-btn btn-reject" onclick="rejectWithdrawal('${w.id}')">Reject</button>` : ''}</td>`;
+          withdrawalTable.appendChild(row);
+        });
+
+        // brand requests
+        const brandSnap = await getDocs(query(collection(db, "brandRequests"), orderBy("date", "desc")));
+        const brands = []; brandSnap.forEach(d => brands.push({ id: d.id, ...d.data() }));
+        document.getElementById('brandRequests').textContent = brands.length;
+        const brandTable = document.getElementById('brandRequestTable'); brandTable.innerHTML = '';
+        brands.forEach(b => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${b.brandName}</td><td>${b.brandEmail}</td><td>₹${b.campaignBudget}</td><td>${b.campaignType}</td><td>${formatDate(b.date)}</td>
+            <td><button class="action-btn btn-approve" onclick="contactBrand('${b.id}')">Contact</button></td>`;
+          brandTable.appendChild(row);
+        });
+      }
+
+      // Approve submission: mark submission approved and add amount to user balance
+      window.approveSubmission = async function(subId, userId, amount) {
+        try {
+          // mark submission approved
+          await updateDoc(doc(db, "submissions", subId), { status: 'approved' });
+
+          // update user's balance (get current then update)
+          const userRef = doc(db, "users", userId);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const newBalance = (userSnap.data().balance || 0) + (amount || 0);
+            await updateDoc(userRef, { balance: newBalance });
+          }
+          alert('Submission approved and user balance updated!');
+          await loadAdminData();
+        } catch (err) { alert(err.message); }
+      };
+
+      window.rejectSubmission = async function(subId) {
+        try {
+          await updateDoc(doc(db, "submissions", subId), { status: 'rejected' });
+          alert('Submission rejected!');
+          await loadAdminData();
+        } catch (err) { alert(err.message); }
+      };
+
+      // Approve withdrawal: mark completed and deduct from user balance
+      window.approveWithdrawal = async function(withdrawalId, userId, amount) {
+        try {
+          await updateDoc(doc(db, "withdrawals", withdrawalId), { status: 'completed' });
+          const userRef = doc(db, "users", userId);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const newBalance = (userSnap.data().balance || 0) - (amount || 0);
+            await updateDoc(userRef, { balance: newBalance });
+          }
+          alert('Withdrawal approved and user balance updated!');
+          await loadAdminData();
+        } catch (err) { alert(err.message); }
+      };
+
+      window.rejectWithdrawal = async function(withdrawalId) {
+        try {
+          await updateDoc(doc(db, "withdrawals", withdrawalId), { status: 'rejected' });
+          alert('Withdrawal rejected!');
+          await loadAdminData();
+        } catch (err) { alert(err.message); }
+      };
+
+      // Admin edit user (simple balance edit prompt)
+      window.adminEditUser = async function(userDocId, currentBalance) {
+        const val = prompt('Edit balance (current: ₹' + currentBalance + ')', currentBalance);
+        if (val === null) return;
+        const newVal = parseInt(val);
+        if (isNaN(newVal)) { alert('Invalid number'); return; }
+        try {
+          await updateDoc(doc(db, "users", userDocId), { balance: newVal });
+          alert('User balance updated!');
+          await loadAdminData();
+        } catch (err) { alert(err.message); }
+      };
+
+      window.contactBrand = async function(brandId) {
+        const s = await getDoc(doc(db, "brandRequests", brandId));
+        if (s.exists()) {
+          const d = s.data();
+          alert(`Contacting brand: ${d.brandName} at ${d.brandEmail}`);
+        }
+      };
+
+      // === Helper: load admin data from global if admin logged in, else skip ===
+      // (called from onAuthStateChanged when admin logs in)
+
+      // === General showPage / toggleFloatingMenu (kept from original) ===
+      window.showPage = function(pageId) {
+        document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+        const el = document.getElementById(pageId);
+        if (el) el.classList.add('active');
+        document.getElementById('floatingMenu').classList.remove('active');
+        window.scrollTo(0,0);
+
+        // when showing admin, refresh admin data if admin
+        if (pageId === 'admin' && firebaseUser && firebaseUser.email === 'admin@instapromo.com') {
+          loadAdminData();
+        }
+      };
+      window.toggleFloatingMenu = function() {
+        document.getElementById('floatingMenu').classList.toggle('active');
+      };
+      document.addEventListener('click', (event) => {
+        const floatingMenu = document.getElementById('floatingMenu');
+        const menuBtn = document.querySelector('.floating-menu-btn');
+        if (!floatingMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+          floatingMenu.classList.remove('active');
+        }
+      });
+
+      // === Send message (contact form) - simple client-side only ===
+      window.sendMessage = function() {
+        const contactName = document.getElementById('contactName').value.trim();
+        const contactEmail = document.getElementById('contactEmail').value.trim();
+        const contactSubject = document.getElementById('contactSubject').value.trim();
+        const contactMessage = document.getElementById('contactMessage').value.trim();
+        if (!contactName || !contactEmail || !contactSubject || !contactMessage) { alert('Please fill all fields'); return; }
+        alert('Message sent successfully! We will get back to you soon.');
+        document.getElementById('contactName').value = '';
+        document.getElementById('contactEmail').value = '';
+        document.getElementById('contactSubject').value = '';
+        document.getElementById('contactMessage').value = '';
+      };
+
+      // === Initialize brands grid sample ===
+      (function initBrandsGrid(){
+        const g = document.getElementById('brandsGrid');
+        const brands = [
+          {name:'FashionHub', cat:'Fashion & Apparel', color:'#ff6b6b', icon:'fa-tshirt'},
+          {name:'TechGadgets', cat:'Electronics', color:'#4a00e0', icon:'fa-laptop'},
+          {name:'FoodieDelight', cat:'Food & Beverages', color:'#28a745', icon:'fa-utensils'}
+        ];
+        brands.forEach(b=>{
+          const card = document.createElement('div');
+          card.className = 'brand-card';
+          card.innerHTML = `<div class="brand-logo" style="background:${b.color}"><i class="fas ${b.icon}"></i></div><div class="brand-name">${b.name}</div><div class="brand-category">${b.cat}</div>`;
+          g.appendChild(card);
+        });
+      })();
+
+      // === On page load: nothing else required; auth listener will handle state ===
+    </script>
+</body>
+</html>
